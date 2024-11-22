@@ -11,20 +11,36 @@
 
 const accordionBtns = document.querySelectorAll(".accordion");
 
-accordionBtns.forEach((accordion) => {
+accordionBtns.forEach((accordion, index) => {
   accordion.onclick = function () {
-    this.classList.toggle("is-open");
+    const isExpanded = this.getAttribute("aria-expanded") === "true";
+    this.setAttribute("aria-expanded", !isExpanded);
 
     let content = this.nextElementSibling;
-    console.log(content);
-
-    if (content.style.maxHeight) {
-      //this is if the accordion is open
-      content.style.maxHeight = null;
-    } else {
-      //if the accordion is currently closed
-      content.style.maxHeight = content.scrollHeight + "px";
-      console.log(content.style.maxHeight);
-    }
+    content.style.maxHeight = isExpanded ? null : content.scrollHeight + "px";
   };
+
+  accordion.addEventListener("keydown", (event) => {
+    const key = event.key;
+    const totalButtons = accordionBtns.length;
+
+    switch (key) {
+      case "ArrowDown":
+        event.preventDefault();
+        accordionBtns[(index + 1) % totalButtons].focus();
+        break;
+      case "ArrowUp":
+        event.preventDefault();
+        accordionBtns[(index - 1 + totalButtons) % totalButtons].focus();
+        break;
+      case "Home":
+        event.preventDefault();
+        accordionBtns[0].focus();
+        break;
+      case "End":
+        event.preventDefault();
+        accordionBtns[totalButtons - 1].focus();
+        break;
+    }
+  });
 });
